@@ -75,6 +75,63 @@ class AVLTree(object):
                     self._balance_the_tree(new_node)
                     return True
 
+    def delete_node(self, val):
+        nd_to_del = self.find_val(val)
+        if not nd_to_del:
+            return False
+        nd_to_swp = self.find_min_that_greater_than_val(val, nd_to_del)
+        if not nd_to_swp:
+            nd_to_swp = self.find_max_that_less_than_val(val, nd_to_del)
+
+        if not nd_to_swp:
+            if not nd_to_del.parents:
+                self.root = None
+                return True
+            if nd_to_del.parents.left == nd_to_del:
+                nd_to_del.parents.left = None
+            if nd_to_del.parents.right == nd_to_del:
+                nd_to_del.parents.right = None
+            self._balance_the_tree(nd_to_del.parents)
+            return True
+
+        nd_to_del.val = nd_to_swp.val
+
+        if nd_to_swp.left:
+            tmp = nd_to_swp.left
+        else:
+            tmp = nd_to_swp.right
+        if nd_to_swp.parents.left == nd_to_swp:
+            nd_to_swp.parents.left = tmp
+        if nd_to_swp.parents.right == nd_to_swp:
+            nd_to_swp.parents.right = tmp
+        if tmp:
+            tmp.parents = nd_to_swp.parents
+
+        self._balance_the_tree(nd_to_swp.parents)
+        return True
+
+    def display_tree(self):
+        if not self.root:
+            print "Empty Tree"
+            return
+        cur_h = 1
+        cur_row = []
+        from collections import deque
+        nodes_queue = deque()
+        nodes_queue.append((self.root, cur_h))
+        while nodes_queue:
+            cur_node, h = nodes_queue.popleft()
+            if h != cur_h:
+                print cur_row
+                cur_row = []
+                cur_h = h
+            if not cur_node:
+                cur_row = cur_row + ['N']
+            else:
+                cur_row = cur_row + [cur_node.val]
+                nodes_queue.append((cur_node.left, h+1))
+                nodes_queue.append((cur_node.right, h+1))
+
     def _balance_the_tree(self, nd):
         cur = nd
         while cur:
@@ -94,7 +151,6 @@ class AVLTree(object):
             self._update_height(cur)
             cur = cur.parents
 
-
     def _left_rotate(self, nd):
         tmp = nd.right
         nd.right = tmp.left
@@ -107,7 +163,6 @@ class AVLTree(object):
         self._update_height(nd)
         self._update_height(tmp)
         return tmp
-
 
     def _right_rotate(self, nd):
         tmp = nd.left
@@ -152,78 +207,24 @@ class AVLTree(object):
         else:
             new_child.parents.right = new_child
 
-    def delete_node(self, val):
-        nd_to_del = self.find_val(val)
-        if not nd_to_del:
-            return False
-        nd_to_swp = self.find_min_that_greater_than_val(val, nd_to_del)
-        if not nd_to_swp:
-            nd_to_swp = self.find_max_that_less_than_val(val, nd_to_del)
-
-        if not nd_to_swp:
-            if not nd_to_del.parents:
-                self.root = None
-                return True
-            if nd_to_del.parents.left == nd_to_del:
-                nd_to_del.parents.left = None
-            if nd_to_del.parents.right == nd_to_del:
-                nd_to_del.parents.right = None
-            self._balance_the_tree(nd_to_del.parents)
-            return True
-
-        tmp = nd_to_del.val
-        nd_to_del.val = nd_to_swp.val
-        nd_to_swp.val = tmp
-
-
-        if nd_to_swp.left:
-            tmp = nd_to_swp.left
-        else:
-            tmp = nd_to_swp.right
-        if nd_to_swp.parents.left == nd_to_swp:
-            nd_to_swp.parents.left = tmp
-        if nd_to_swp.parents.right == nd_to_swp:
-            nd_to_swp.parents.right = tmp
-
-        self._balance_the_tree(nd_to_swp.parents)
-        return True
-
-
-
-
-
-    def display_tree(self):
-        if not self.root:
-            print "Empty Tree"
-            return
-        cur_h = 1
-        cur_row = []
-        from collections import deque
-        nodes_queue = deque()
-        nodes_queue.append((self.root, cur_h))
-        while nodes_queue:
-            cur_node, h = nodes_queue.popleft()
-            if not cur_node:
-                cur_row = cur_row + ['N']
-                continue
-            if h != cur_h:
-                print cur_row
-                cur_row = [cur_node.val]
-                cur_h = h
-            else:
-                cur_row = cur_row + [cur_node.val]
-            nodes_queue.append((cur_node.left, h+1))
-            nodes_queue.append((cur_node.right, h+1))
-        print cur_row
-
 
 tree_1 = AVLTree()
-val_list = [1, 8, 3, 43, 13, 27, 48, 11, 32, 16]
+val_list = [1, 8, 3, 43, 13, 27, 48, 11, 32, 16, 14, 26, 15, 19, 98, 83, 21, 32, 11, 7, 5, 10]
 for val in val_list:
     tree_1.insert_node(val)
 
+# delete a number
+tree_1.delete_node(48)
+
+# find smallest number that is greater than 40
+print tree_1.find_min_that_greater_than_val(40).val
+
+# find largest number that is less than 40
+print tree_1.find_max_that_less_than_val(40).val
+
+# find number 40 in the tree
+node = tree_1.find_val(40)
+print node.val if node else node
+
+# display the tree
 tree_1.display_tree()
-
-print "Done!"
-
-
