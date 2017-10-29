@@ -94,10 +94,7 @@ class AVLTree(object):
             self._balance_the_tree(nd_to_del.parents)
             return True
 
-        tmp = nd_to_del.val
         nd_to_del.val = nd_to_swp.val
-        nd_to_swp.val = tmp
-
 
         if nd_to_swp.left:
             tmp = nd_to_swp.left
@@ -107,6 +104,8 @@ class AVLTree(object):
             nd_to_swp.parents.left = tmp
         if nd_to_swp.parents.right == nd_to_swp:
             nd_to_swp.parents.right = tmp
+        if tmp:
+            tmp.parents = nd_to_swp.parents
 
         self._balance_the_tree(nd_to_swp.parents)
         return True
@@ -213,6 +212,9 @@ tree_1 = AVLTree()
 val_list = [1, 8, 3, 43, 13, 27, 48, 11, 32, 16, 14, 26, 15, 19, 98, 83, 21, 32, 11, 7, 5, 10]
 for val in val_list:
     tree_1.insert_node(val)
+
+# delete a number
+tree_1.delete_node(48)
 
 # find smallest number that is greater than 40
 print tree_1.find_min_that_greater_than_val(40).val
