@@ -3,29 +3,40 @@ class RBNode(object):
 	RED = 1
 
 	def __init__(self, val=None, color=BLACK):
-		self.val = val
-		self.color = color
+		self._val = val
+		self._color = color
 		self.left = None
 		self.right = None
 		self.parents = None
 
 	def is_black(self):
-		return self.color == self.BLACK
+		return self._color == self.BLACK
 
 	def is_red(self):
-		return self.color == self.RED
+		return self._color == self.RED
 
 	def flip_color(self):
-		self.color = (self.color + 1) % 2
+		self._color = (self._color + 1) % 2
 
 	def color_black(self):
-		self.color = self.BLACK
+		self._color = self.BLACK
 
 	def color_red(self):
-		self.color = self.RED
+		self._color = self.RED
 
-	def assign_color(self, color):
-		self.color = color
+	@property
+	def color(self):
+		return self._color
+
+	def set_color(self, color):
+		self._color = color
+
+	@property
+	def val(self):
+		return self._val
+
+	def set_val(self, val):
+		self._val = val
 
 
 class RBTree(object):
@@ -68,7 +79,7 @@ class RBTree(object):
 				cur = cur.right
 		return res
 
-	def insert_node(self, val):
+	def insert_val(self, val):
 		if not self.root:
 			self.root = RBNode(val, color=RBNode.BLACK)
 			return True
@@ -84,7 +95,7 @@ class RBTree(object):
 					cur.right = rb_node
 					rb_node.parents = cur
 					# do re-coloring
-					self.recolor(rb_node)
+					self._recolor(rb_node)
 					break
 			else:
 				if cur.left:
@@ -93,10 +104,53 @@ class RBTree(object):
 					cur.left = rb_node
 					rb_node.parents = cur
 					# do re-coloring
-					self.recolor(rb_node)
+					self._recolor(rb_node)
 					break
 
-	def recolor(self, nd):
+	def remove_val(self, val):
+		cur = self.root
+		while cur and val != cur.val:
+			if val > cur.val:
+				cur = cur.right
+			else:
+				cur = cur.left
+		if cur:
+			# do remove cur
+			swap_node = self.find_min_that_greater_than_val(val, cur)
+			if not swap_node:
+				swap_node = self.find_max_that_less_than_val(val, cur)
+			if not swap_node:
+				self._delete_node(cur)
+			else:
+				cur.set_val(swap_node.val)
+				self._delete_node(swap_node)
+			return True
+		else:
+			return False
+
+	def display_tree(self):
+		if not self.root:
+			print "Empty Tree"
+			return
+		cur_h = 1
+		cur_row = []
+		from collections import deque
+		nodes_queue = deque()
+		nodes_queue.append((self.root, cur_h))
+		while nodes_queue:
+			cur_node, h = nodes_queue.popleft()
+			if h != cur_h:
+				print cur_row
+				cur_row = []
+				cur_h = h
+			if not cur_node:
+				cur_row = cur_row + [('N', RBNode.BLACK)]
+			else:
+				cur_row = cur_row + [(cur_node.val, cur_node.color)]
+				nodes_queue.append((cur_node.left, h + 1))
+				nodes_queue.append((cur_node.right, h + 1))
+
+	def _recolor(self, nd):
 		cur = nd
 		while cur:
 			if cur.is_black():
@@ -130,42 +184,6 @@ class RBTree(object):
 					grandpa.color_red()
 			cur = grandpa
 
-
-	def delete_node(self, val):
-		cur = self.root
-		while cur and val != cur.val:
-			if val > cur.val:
-				cur = cur.right
-			else:
-				cur = cur.left
-		if cur:
-			# do remove cur
-			return True
-		else:
-			return False
-
-	def display_tree(self):
-		if not self.root:
-			print "Empty Tree"
-			return
-		cur_h = 1
-		cur_row = []
-		from collections import deque
-		nodes_queue = deque()
-		nodes_queue.append((self.root, cur_h))
-		while nodes_queue:
-			cur_node, h = nodes_queue.popleft()
-			if h != cur_h:
-				print cur_row
-				cur_row = []
-				cur_h = h
-			if not cur_node:
-				cur_row = cur_row + [('N', RBNode.BLACK)]
-			else:
-				cur_row = cur_row + [(cur_node.val, cur_node.color)]
-				nodes_queue.append((cur_node.left, h + 1))
-				nodes_queue.append((cur_node.right, h + 1))
-
 	def _rotate_left(self, nd):
 		tmp = nd.right
 		nd.right = tmp.left
@@ -183,8 +201,8 @@ class RBTree(object):
 		nd.parents = tmp
 		tmp.left = nd
 		nd_color = nd.color
-		nd.assign_color(tmp.color)
-		tmp.assign_color(nd_color)
+		nd.set_color(tmp.color)
+		tmp.set_color(nd_color)
 		return tmp
 
 	def _rotate_right(self, nd):
@@ -204,15 +222,40 @@ class RBTree(object):
 		nd.parents = tmp
 		tmp.right = nd
 		nd_color = nd.color
-		nd.assign_color(tmp.color)
-		tmp.assign_color(nd_color)
+		nd.set_color(tmp.color)
+		tmp.set_color(nd_color)
 		return tmp
+
+	def _delete_node(self, nd):
+		child = nd.left
+		if not child:
+			child = nd.right
+		if not child:
+			if nd == self.root:
+				self.root = None
+				return
+			if nd.parents.left == nd:
+				nd.parents.left = None
+			if nd.parents.right == nd:
+				nd.parents.right = None
+			if nd.is_black():
+				pass
+		else:
+			# nd could not be the root node -> it has parents
+			# nd's color is definitely BLACK
+			if nd.parents.left == nd:
+				nd.parents.left = child
+			if nd.parents.right == nd:
+				nd.parents.right = child
+			child.parents = nd.parents
+			child.color_black()
+
 
 
 rb_tree_1 = RBTree()
 
 a = [13, 1, 9, 12, 98, 34, 32, 12, 28, 7, 6, 65, 14, 123]
 for val in a:
-	rb_tree_1.insert_node(val)
+	rb_tree_1.insert_val(val)
 
 rb_tree_1.display_tree()

@@ -49,7 +49,7 @@ class AVLTree(object):
 				cur = cur.right
 		return res
 
-	def insert_node(self, val):
+	def insert_val(self, val):
 		new_node = AVLNode(val)
 		cur = self.root
 		if not cur:
@@ -75,7 +75,7 @@ class AVLTree(object):
 					self._balance_the_tree(new_node)
 					return True
 
-	def delete_node(self, val):
+	def remove_val(self, val):
 		nd_to_del = self.find_val(val)
 		if not nd_to_del:
 			return False
@@ -211,10 +211,10 @@ class AVLTree(object):
 tree_1 = AVLTree()
 val_list = [1, 8, 3, 43, 13, 27, 48, 11, 32, 16, 14, 26, 15, 19, 98, 83, 21, 32, 11, 7, 5, 10]
 for val in val_list:
-	tree_1.insert_node(val)
+	tree_1.insert_val(val)
 
 # delete a number
-tree_1.delete_node(48)
+tree_1.remove_val(48)
 
 # find smallest number that is greater than 40
 print tree_1.find_min_that_greater_than_val(40).val
