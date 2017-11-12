@@ -8,6 +8,11 @@ class AVLNode(object):
 	def __init__(self, val=None):
 		self.val = val
 
+	def __str__(self):
+		return str(self.val)
+
+	def __repr__(self):
+		return str(self.val)
 
 class AVLTree(object):
 	root = None
@@ -114,7 +119,8 @@ class AVLTree(object):
 		if not self.root:
 			print "Empty Tree"
 			return
-		cur_h = 1
+		cur_h = 0
+		max_h = 0
 		cur_row = []
 		from collections import deque
 		nodes_queue = deque()
@@ -122,15 +128,19 @@ class AVLTree(object):
 		while nodes_queue:
 			cur_node, h = nodes_queue.popleft()
 			if h != cur_h:
+				if h > max_h:
+					break
 				print cur_row
 				cur_row = []
 				cur_h = h
+			cur_row.append(cur_node)
 			if not cur_node:
-				cur_row = cur_row + ['N']
+				nodes_queue.append((None, h+1))
+				nodes_queue.append((None, h+1))
 			else:
-				cur_row = cur_row + [cur_node.val]
 				nodes_queue.append((cur_node.left, h + 1))
 				nodes_queue.append((cur_node.right, h + 1))
+				max_h = h + 1
 
 	def _balance_the_tree(self, nd):
 		cur = nd
