@@ -38,6 +38,12 @@ class RBNode(object):
 	def set_val(self, val):
 		self._val = val
 
+	def __str__(self):
+		return str((self.val, self.color))
+
+	def __repr__(self):
+		return str((self.val, self.color))
+
 
 class RBTree(object):
 	root = None
@@ -133,6 +139,7 @@ class RBTree(object):
 			print "Empty Tree"
 			return
 		cur_h = 1
+		max_h = cur_h
 		cur_row = []
 		from collections import deque
 		nodes_queue = deque()
@@ -140,15 +147,19 @@ class RBTree(object):
 		while nodes_queue:
 			cur_node, h = nodes_queue.popleft()
 			if h != cur_h:
+				if h > max_h:
+					break
 				print cur_row
 				cur_row = []
 				cur_h = h
+			cur_row.append(cur_node)
 			if not cur_node:
-				cur_row = cur_row + [('N', RBNode.BLACK)]
+				nodes_queue.append((None, h + 1))
+				nodes_queue.append((None, h + 1))
 			else:
-				cur_row = cur_row + [(cur_node.val, cur_node.color)]
 				nodes_queue.append((cur_node.left, h + 1))
 				nodes_queue.append((cur_node.right, h + 1))
+				max_h = h + 1
 
 	def _recolor(self, nd):
 		cur = nd
