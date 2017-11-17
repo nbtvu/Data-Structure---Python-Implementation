@@ -16,9 +16,9 @@ class MaxNode(STNode):
 
 	@classmethod
 	def synthesize(cls, node1, node2):
-		if node1 == None:
+		if not node1:
 			return node2.val
-		if node2 == None:
+		if not node2:
 			return node1.val
 		return max(node1.val, node2.val)
 
@@ -37,9 +37,9 @@ class MinNode(STNode):
 
 	@classmethod
 	def synthesize(cls, node1, node2):
-		if node1 == None:
+		if not node1:
 			return node2.val
-		if node2 == None:
+		if not node2:
 			return node1.val
 		return min(node1.val, node2.val)
 
@@ -58,9 +58,9 @@ class SumNode(STNode):
 
 	@classmethod
 	def synthesize(cls, node1, node2):
-		if node1 == None:
+		if not node1:
 			return node2.val
-		if node2 == None:
+		if not node2:
 			return node1.val
 		return node1.val + node2.val
 
@@ -114,7 +114,7 @@ class SegmentTree(object):
 		right_res = self._synthesize((pos<<1)+2, x, y)
 		return self.node_class.synthesize_val(left_res, right_res)
 
-segment_tree_1 = SegmentTree(100, node_class=MaxNode)
+segment_tree_1 = SegmentTree(100, node_class=SumNode)
 updates = [(1, 2), (3, 19), (23, 52), (42, 1), (58, 32), (17, 29), (19, 10), (10, 100), (32, 28),
 		   (22, 28), (3, 19), (6, 111), (43, 12), (78, 12), (87, 1), (46, 69), (99, 11), (0, 2)]
 queries = [(0, 99), (2, 18), (45, 99), (23, 78), (2, 12), (38, 90), (46, 47)]
