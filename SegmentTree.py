@@ -10,68 +10,51 @@ class STNode(object):
 	def __repr__(self):
 		return str(self.val)
 
-class MaxNode(STNode):
-	def __init__(self, l, r):
-		super(MaxNode, self).__init__(l, r)
-
 	@classmethod
 	def synthesize(cls, node1, node2):
 		if not node1:
 			return node2.val
 		if not node2:
 			return node1.val
-		return max(node1.val, node2.val)
+		return cls._get_target_val(node1.val, node2.val)
 
 	@classmethod
-	def synthesize_val(cls, val1, val2):
+	def synthesize_val(self, val1, val2):
 		if val1 == None:
 			return val2
 		if val2 == None:
 			return val1
-		return max(val1, val2)
+		return self._get_target_val(val1, val2)
 
+	@classmethod
+	def _get_target_val(cls, val1, val2):
+		"""
+		need to be overridden in sub-class
+		"""
+		pass
+class MaxNode(STNode):
+	def __init__(self, l, r):
+		super(MaxNode, self).__init__(l, r)
+
+	@classmethod
+	def _get_target_val(self, val1, val2):
+		return max(val1, val2)
 
 class MinNode(STNode):
 	def __init__(self, l, r):
 		super(MinNode, self).__init__(l, r)
 
 	@classmethod
-	def synthesize(cls, node1, node2):
-		if not node1:
-			return node2.val
-		if not node2:
-			return node1.val
-		return min(node1.val, node2.val)
-
-	@classmethod
-	def synthesize_val(cls, val1, val2):
-		if val1 == None:
-			return val2
-		if val2 == None:
-			return val1
+	def _get_target_val(cls, val1, val2):
 		return min(val1, val2)
-
 
 class SumNode(STNode):
 	def __init__(self, l, r):
 		super(SumNode, self).__init__(l, r)
 
 	@classmethod
-	def synthesize(cls, node1, node2):
-		if not node1:
-			return node2.val
-		if not node2:
-			return node1.val
-		return node1.val + node2.val
-
-	@classmethod
-	def synthesize_val(cls, val1, val2):
-		if val1 == None:
-			return val2
-		if val2 == None:
-			return val1
+	def _get_target_val(cls, val1, val2):
 		return val1 + val2
-
 
 class SegmentTree(object):
 	def __init__(self, n, node_class):
