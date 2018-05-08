@@ -38,7 +38,7 @@ class Trie(object):
 
     def remove(self, key):
         node = self._get_node(key)
-        if not node:
+        if not node or node.val is None:
             return False
         node.val = None
         keylen = len(key)
