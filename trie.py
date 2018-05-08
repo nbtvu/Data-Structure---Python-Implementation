@@ -11,7 +11,7 @@ class Trie(object):
     def __init__(self):
         self._root = Node()
 
-    def put(self, key, value):
+    def put(self, key, value, override = True):
         keylen = len(key)
         idx = 0
         curNode = self._root
@@ -24,7 +24,11 @@ class Trie(object):
                 curNode = curNode.children[key[idx]]
             curNode.count += 1
             idx += 1
-        curNode.val = value
+        if not override and curNode.val != None:
+            return False
+        else:
+            curNode.val = value
+        return True
 
 
     def get(self, key):
@@ -73,7 +77,7 @@ class Trie(object):
 
     def _traverse(self, node, curWord):
         matched = []
-        if node.val:
+        if node.val is not None:
             matched.append(curWord)
         for ch in node.children:
             matched += self._traverse(node.children[ch], curWord + ch)
