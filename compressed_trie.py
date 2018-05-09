@@ -29,7 +29,8 @@ class CompressedTrie(object):
                     newNode = Node()
                     newNode.count = nxtNode.count + 1
                     newNode.str = nxtNode.str[:j]
-                    newNode.children[nxtNode.str[j]] = nxtNode
+                    nxtNode.str = nxtNode.str[j:]
+                    newNode.children[nxtNode.str[0]] = nxtNode
                     if idx + j > keylen:
                         newNode.val = value
                     curNode.children[key[idx]] = newNode
